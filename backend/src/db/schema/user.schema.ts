@@ -1,9 +1,11 @@
+import { relations } from "drizzle-orm/_relations";
 import {
     pgTable,
     timestamp,
     uuid,
     varchar,
 } from "drizzle-orm/pg-core";
+import { documents } from "./document.schema.js";
 
 export const users = pgTable('users', {
     id: uuid("id")
@@ -28,6 +30,10 @@ export const users = pgTable('users', {
         .$onUpdate(() => new Date())
         .notNull(),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+    documents: many(documents),
+}));
 
 export type Users = typeof users.$inferSelect;
 export type NewUsers = typeof users.$inferInsert;
