@@ -8,6 +8,7 @@ import { PDFParse } from 'pdf-parse';
 import { documents, EmbeddingStatus } from "../db/schema/document.schema.js";
 import { documentChunks } from "../db/schema/documentChunk.schema.js";
 import { and, eq } from "drizzle-orm";
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class DocumentsService {
@@ -258,6 +259,42 @@ export class DocumentsService {
             status: true,
             message: "Embedding retry initiated in background"
         };
+
+    }
+
+
+    async getUserDocuments(request: any) {
+
+        const userId = request?.user?.id;
+
+        if (!userId) {
+            throw new HttpException("User not found", HttpStatus.UNAUTHORIZED)
+        }
+
+        const userDocuments = await this.db
+            .select()
+            .from(documents)
+            .where(eq(documents.userId, userId));
+
+        const documentsWithPresingedUrl = await Promise.all(
+            userDocuments?.map(async (document) => {
+                const command = new GetObjectCommand({
+                    Bucket: process.env.S3_BUCKET,
+                    Key: document.fileKey,
+                });
+                const presignedUrl = await getSignedUrl(this.client, command, { expiresIn: 3600 });
+                return {
+                    ...document,
+                    fileUrl: presignedUrl,
+                };
+            })
+        );
+        return {
+            status: true,
+            statusCode: HttpStatus.OK,
+            message: "Documents fetched successfully",
+            data: documentsWithPresingedUrl
+        }
 
     }
 

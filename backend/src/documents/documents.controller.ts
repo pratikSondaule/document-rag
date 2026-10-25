@@ -1,4 +1,4 @@
-import { Controller, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { DocumentsService } from "./documents.service.js";
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -51,6 +51,17 @@ export class DocumentsController {
         @Param("documentId") documentId: string
     ) {
         return await this.documentsService.retryEmbedding(request, documentId)
+    }
+
+
+    @ApiOperation({ summary: "Get all documents" })
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Get()
+    async getUserDocuments(
+        @Req() request: Request,
+    ) {
+        return await this.documentsService.getUserDocuments(request)
     }
 
 }
