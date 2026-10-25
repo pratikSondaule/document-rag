@@ -1,0 +1,371 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "301813dc-a9e9-4ba3-9f61-56454da64929",
+  "prevIds": [
+    "a95b4256-9be7-4090-9e96-c6bd237345a4"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "message_role"
+      ],
+      "writes": [
+        "s|enum|public.message_role",
+        "n|enum|public.message_role",
+        "e|enum|public.message_role",
+        "n|type|public.message_role"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "chat_messages"
+      ],
+      "writes": [
+        "s|tbl|public.chat_messages",
+        "n|tbl|public.chat_messages",
+        "e|tbl|public.chat_messages",
+        "n|rel|public.chat_messages",
+        "n|type|public.chat_messages",
+        "n|rel|public.chat_messages_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.message_role"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "chat_sessions"
+      ],
+      "writes": [
+        "s|tbl|public.chat_sessions",
+        "n|tbl|public.chat_sessions",
+        "e|tbl|public.chat_sessions",
+        "n|rel|public.chat_sessions",
+        "n|type|public.chat_sessions",
+        "n|rel|public.chat_sessions_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "chat_messages"
+      ],
+      "writes": [
+        "s|fk|public.chat_messages.chat_messages_session_id_chat_sessions_id_fkey",
+        "n|fk|public.chat_messages.chat_messages_session_id_chat_sessions_id_fkey",
+        "e|fk|public.chat_messages.chat_messages_session_id_chat_sessions_id_fkey",
+        "n|con|public.chat_messages.chat_messages_session_id_chat_sessions_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.chat_messages",
+        "n|sch|public",
+        "n|tbl|public.chat_sessions",
+        "n|sch|public",
+        "n|col|public.chat_messages.session_id",
+        "n|col|public.chat_sessions.id",
+        "e|uniqueness|public.chat_sessions.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "chat_sessions"
+      ],
+      "writes": [
+        "s|fk|public.chat_sessions.chat_sessions_user_id_users_id_fkey",
+        "n|fk|public.chat_sessions.chat_sessions_user_id_users_id_fkey",
+        "e|fk|public.chat_sessions.chat_sessions_user_id_users_id_fkey",
+        "n|con|public.chat_sessions.chat_sessions_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.chat_sessions",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.chat_sessions.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "chat_messages",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "chat_sessions",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "message_role",
+        "values": [
+          "user",
+          "assistant"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_messages",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_messages",
+        "name": "session_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_messages",
+        "name": "role",
+        "type": "message_role",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_messages",
+        "name": "content",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_messages",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_sessions",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_sessions",
+        "name": "user_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_sessions",
+        "name": "title",
+        "type": "varchar(255)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_sessions",
+        "name": "created_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_sessions",
+        "name": "updated_at",
+        "type": "timestamp",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_messages",
+        "name": "chat_messages_session_id_chat_sessions_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "session_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "chat_sessions",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_sessions",
+        "name": "chat_sessions_user_id_users_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "user_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "users",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_messages",
+        "name": "chat_messages_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_sessions",
+        "name": "chat_sessions_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    }
+  ]
+}

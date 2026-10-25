@@ -7,6 +7,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "./db/schema/index.js";
 import { AuthModule } from './auth/auth.module.js';
 import { DocumentsModule } from './documents/documents.module.js';
+import { ChatsModule } from './chats/chats.module.js';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { DocumentsModule } from './documents/documents.module.js';
       },
     }),
     AuthModule,
-    DocumentsModule
+    DocumentsModule,
+    ChatsModule
   ],
   controllers: [AppController],
   providers: [AppService],

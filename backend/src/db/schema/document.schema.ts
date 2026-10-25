@@ -2,10 +2,10 @@ import {
     pgEnum,
     pgTable,
     timestamp,
-    uuid
+    uuid,
+    varchar
 } from "drizzle-orm/pg-core";
 import { users } from "./user.schema.js";
-import { varchar } from "drizzle-orm/cockroach-core";
 import { relations } from "drizzle-orm/_relations";
 
 export enum EmbeddingStatus {

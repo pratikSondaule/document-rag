@@ -1,0 +1,1 @@
+ALTER TABLE "document_chunks" DROP CONSTRAINT "document_chunks_document_id_documents_id_fkey", ADD CONSTRAINT "document_chunks_document_id_documents_id_fkey" FOREIGN KEY ("document_id") REFERENCES "documents"("id") ON DELETE CASCADE;

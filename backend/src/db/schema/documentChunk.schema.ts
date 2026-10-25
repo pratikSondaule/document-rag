@@ -18,7 +18,7 @@ export const documentChunks = pgTable('document_chunks', {
 
     documentId: uuid('document_id')
         .notNull()
-        .references(() => documents.id),
+        .references(() => documents.id, { onDelete: "cascade" }),
 
     content: text("content")
         .notNull(),

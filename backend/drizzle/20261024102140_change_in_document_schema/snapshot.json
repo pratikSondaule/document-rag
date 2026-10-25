@@ -1,0 +1,44 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "3c86ab74-f311-4121-b027-61eeed8f7113",
+  "prevIds": [
+    "301813dc-a9e9-4ba3-9f61-56454da64929"
+  ],
+  "footprints": [
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_chunks"
+      ],
+      "writes": [
+        "s|fk|public.document_chunks.document_chunks_document_id_documents_id_fkey",
+        "n|fk|public.document_chunks.document_chunks_document_id_documents_id_fkey",
+        "e|fk|public.document_chunks.document_chunks_document_id_documents_id_fkey",
+        "n|con|public.document_chunks.document_chunks_document_id_documents_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_chunks",
+        "n|sch|public",
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|col|public.document_chunks.document_id",
+        "n|col|public.documents.id",
+        "e|uniqueness|public.documents.id"
+      ],
+      "sqlHash": "116f5f147919b5c6"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"document_chunks\",\"document_chunks_document_id_documents_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    }
+  ]
+}
