@@ -24,7 +24,7 @@ export default function SidebarContent({ onNavigate }) {
         <div className="grid size-8 place-items-center rounded-lg bg-indigo-600 text-white">
           <FileText className="size-4" strokeWidth={1.75} />
         </div>
-        <span className="font-semibold tracking-tight">DocuMind</span>
+        <span className="font-semibold tracking-tight">Document RAG</span>
       </div>
 
       <div className="px-3 pt-4">

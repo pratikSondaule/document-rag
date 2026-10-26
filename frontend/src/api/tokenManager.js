@@ -1,5 +1,5 @@
-const ACCESS_KEY = 'documind_access_token';
-const REFRESH_KEY = 'documind_refresh_token';
+const ACCESS_KEY = 'documentrag_access_token';
+const REFRESH_KEY = 'documentrag_refresh_token';
 
 const read = (key) => {
   try { return localStorage.getItem(key); } catch { return null; }

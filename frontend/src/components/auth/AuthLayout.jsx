@@ -7,7 +7,9 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
         <div className="grid size-9 place-items-center rounded-lg bg-indigo-600 text-white">
           <FileText className="size-5" strokeWidth={1.75} />
         </div>
-        <span className="text-lg font-semibold tracking-tight">DocuMind</span>
+        <span className="text-lg font-semibold tracking-tight">
+          Document RAG
+        </span>
       </div>
 
       <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">

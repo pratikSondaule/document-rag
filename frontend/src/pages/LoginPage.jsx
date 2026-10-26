@@ -51,7 +51,7 @@ export default function LoginPage() {
       subtitle="Sign in to continue to your documents."
       footer={
         <>
-          New to DocuMind?{" "}
+          New to Document RAG?{" "}
           <Link
             to="/register"
             className="font-medium text-indigo-600 hover:text-indigo-700"

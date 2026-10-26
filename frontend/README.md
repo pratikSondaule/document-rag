@@ -1,19 +1,19 @@
-# DocuMind — AI PDF Assistant Frontend
+# Document RAG — AI PDF Assistant Frontend
 
-A modern, responsive React frontend for the DocuMind PDF Retrieval-Augmented Generation (RAG) application.
+A modern, responsive React frontend for the Document RAG PDF Retrieval-Augmented Generation (RAG) application.
 
 ## Tech Stack
 
-| Tool | Version |
-|------|---------|
-| React | 19 |
-| Vite | 8 |
-| Tailwind CSS | 4 (via `@tailwindcss/vite`) |
-| React Router DOM | 7 |
-| Axios | — |
-| Lucide React | — |
-| React Hot Toast | — |
-| React Markdown + Syntax Highlighter | — |
+| Tool                                | Version                     |
+| ----------------------------------- | --------------------------- |
+| React                               | 19                          |
+| Vite                                | 8                           |
+| Tailwind CSS                        | 4 (via `@tailwindcss/vite`) |
+| React Router DOM                    | 7                           |
+| Axios                               | —                           |
+| Lucide React                        | —                           |
+| React Hot Toast                     | —                           |
+| React Markdown + Syntax Highlighter | —                           |
 
 ## Setup & Running
 
@@ -54,11 +54,11 @@ npm run preview    # preview the production build locally
 
 ## Application Routes
 
-| Route | Page | Auth |
-|-------|------|------|
-| `/login` | Login | Public |
-| `/register` | Registration | Public |
-| `/app` | Chat interface | Protected |
+| Route            | Page                | Auth      |
+| ---------------- | ------------------- | --------- |
+| `/login`         | Login               | Public    |
+| `/register`      | Registration        | Public    |
+| `/app`           | Chat interface      | Protected |
 | `/app/documents` | Document management | Protected |
 
 ## Authentication Flow
@@ -75,11 +75,11 @@ npm run preview    # preview the production build locally
 
 All API calls use the centralized Axios client at `src/api/axios.js`.
 
-| Service | File |
-|---------|------|
-| Auth | `src/api/auth.api.js` |
+| Service   | File                       |
+| --------- | -------------------------- |
+| Auth      | `src/api/auth.api.js`      |
 | Documents | `src/api/documents.api.js` |
-| Chats | `src/api/chats.api.js` |
+| Chats     | `src/api/chats.api.js`     |
 
 ## Known Limitations / Backend Dependencies
 
@@ -118,6 +118,7 @@ Once this endpoint exists, update `documents.api.js` to call it and wire it into
 ## CORS
 
 CORS has been enabled in `backend/src/main.ts` to allow:
+
 - `http://localhost:5173` (Vite dev server)
 - `http://localhost:4173` (Vite preview)
 

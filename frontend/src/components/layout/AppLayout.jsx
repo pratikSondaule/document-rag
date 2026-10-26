@@ -27,7 +27,7 @@ export default function AppLayout() {
             >
               <Menu className="size-5" />
             </button>
-            <span className="font-semibold tracking-tight">DocuMind</span>
+            <span className="font-semibold tracking-tight">Document RAG</span>
           </header>
 
           <main className="relative min-h-0 flex-1 overflow-y-auto">
