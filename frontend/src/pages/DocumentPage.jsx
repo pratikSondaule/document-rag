@@ -1,14 +1,35 @@
+import { useState } from "react";
 import { AlertCircle, FileText } from "lucide-react";
+import toast from "react-hot-toast";
 import Button from "../components/common/Button";
+import ConfirmDialog from "../components/common/ConfirmDialog";
 import EmptyState from "../components/common/EmptyState";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import DocumentList from "../components/documents/DocumentList";
 import DocumentUploader from "../components/documents/DocumentUploader";
 import { useDocuments } from "../hooks/useDocuments";
+import { getErrorMessage } from "../utils/apiErrors";
 
 export default function DocumentsPage() {
-  const { documents, loading, error, refresh, retry, retryingIds } =
+  const { documents, loading, error, refresh, retry, remove, retryingIds } =
     useDocuments({ poll: true });
+
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (deleting || !deleteTarget) return;
+    setDeleting(true);
+    try {
+      await remove(deleteTarget.id);
+      toast.success("Document deleted.");
+      setDeleteTarget(null);
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Could not delete document."));
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
@@ -53,9 +74,20 @@ export default function DocumentsPage() {
             documents={documents}
             onRetry={retry}
             retryingIds={retryingIds}
+            onDelete={setDeleteTarget}
           />
         )}
       </section>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete document?"
+        description={`"${deleteTarget?.name ?? ""}" and its index will be permanently deleted.`}
+        confirmLabel="Delete"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

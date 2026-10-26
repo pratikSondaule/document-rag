@@ -4,6 +4,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { ChatsService } from "./chats.service.js";
 import { AskQuestionDto } from "./dto/askQuestion.dto.js";
 import { RenameChatSessionDto } from "./dto/renameChatSession.dto.js";
+import { UpdateSessionDocumentsDto } from "./dto/updateSessionDocuments.dto.js";
 
 @ApiTags("Chats")
 @Controller("chats")
@@ -50,6 +51,24 @@ export class ChatsController {
         @Param("sessionId") sessionId: string,
     ) {
         return await this.chatsService.getChatHistoryBySessionId(request, sessionId)
+    }
+
+
+    @ApiOperation({ summary: "Update Chat Session Documents" })
+    @ApiParam({
+        name: "sessionId",
+        description: "Session ID",
+        required: true
+    })
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Put(":sessionId/documents")
+    async updateSessionDocuments(
+        @Req() request: Request,
+        @Param("sessionId") sessionId: string,
+        @Body() data: UpdateSessionDocumentsDto,
+    ) {
+        return await this.chatsService.updateSessionDocuments(request, sessionId, data.documentIds)
     }
 
 

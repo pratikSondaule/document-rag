@@ -57,5 +57,19 @@ export function useDocuments({ poll = false } = {}) {
     [refresh, retryingIds]
   );
 
-  return { documents, loading, error, refresh, retry, retryingIds };
+  const remove = useCallback(async (id) => {
+    await documentsApi.delete(id);
+    setDocuments((list) => list.filter((d) => d.id !== id));
+  }, []);
+
+  return {
+    documents,
+    loading,
+    error,
+    refresh,
+    retry,
+    remove,
+    deleteDocument: remove,
+    retryingIds,
+  };
 }

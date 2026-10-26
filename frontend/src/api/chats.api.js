@@ -120,4 +120,9 @@ export const chatsApi = {
     api
       .delete(`/chats/${encodeURIComponent(sessionId)}/delete-chat-session`)
       .then((r) => r.data),
+
+  updateSessionDocuments: (sessionId, documentIds) =>
+    api
+      .put(`/chats/${encodeURIComponent(sessionId)}/documents`, { documentIds })
+      .then((r) => r.data),
 };

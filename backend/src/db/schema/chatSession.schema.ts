@@ -2,7 +2,8 @@ import {
     pgTable,
     uuid,
     timestamp,
-    varchar
+    varchar,
+    jsonb
 } from "drizzle-orm/pg-core";
 import { users } from "./user.schema.js";
 import { relations } from "drizzle-orm/_relations";
@@ -20,6 +21,10 @@ export const chatSessions = pgTable("chat_sessions", {
 
     title: varchar("title", { length: 255 })
         .notNull(),
+
+    documentIds: jsonb("document_ids")
+        .$type<string[]>()
+        .default([]),
 
     createdAt: timestamp("created_at")
         .defaultNow()

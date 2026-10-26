@@ -1,9 +1,14 @@
-import { FileText, RotateCw } from "lucide-react";
+import { FileText, RotateCw, Trash2 } from "lucide-react";
 import Button from "../common/Button";
 import DocumentStatus from "./DocumentStatus";
 import { formatDate } from "../../utils/formatDate";
 
-export default function DocumentList({ documents, onRetry, retryingIds }) {
+export default function DocumentList({
+  documents,
+  onRetry,
+  retryingIds,
+  onDelete,
+}) {
   return (
     <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-white">
       {documents.map((doc) => (
@@ -27,18 +32,29 @@ export default function DocumentList({ documents, onRetry, retryingIds }) {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <DocumentStatus status={doc.status} />
             {doc.status === "failed" && (
               <Button
                 variant="secondary"
                 className="h-8 px-3"
-                loading={retryingIds.has(doc.id)}
+                loading={retryingIds?.has(doc.id)}
                 onClick={() => onRetry(doc.id)}
               >
-                {!retryingIds.has(doc.id) && <RotateCw className="size-3.5" />}
+                {!retryingIds?.has(doc.id) && <RotateCw className="size-3.5" />}
                 Retry
               </Button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={() => onDelete(doc)}
+                title="Delete document"
+                aria-label={`Delete ${doc.name}`}
+                className="grid size-8 place-items-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-indigo-600 motion-reduce:transition-none"
+              >
+                <Trash2 className="size-4" strokeWidth={1.75} />
+              </button>
             )}
           </div>
         </li>

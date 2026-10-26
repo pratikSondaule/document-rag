@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { DocumentsService } from "./documents.service.js";
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -62,6 +62,22 @@ export class DocumentsController {
         @Req() request: Request,
     ) {
         return await this.documentsService.getUserDocuments(request)
+    }
+
+
+    @ApiOperation({ summary: "Delete document" })
+    @ApiBearerAuth()
+    @ApiParam({
+        name: "documentId",
+        description: "Document ID"
+    })
+    @UseGuards(AuthGuard('jwt'))
+    @Delete(":documentId")
+    async deleteDocument(
+        @Req() request: Request,
+        @Param("documentId") documentId: string
+    ) {
+        return await this.documentsService.deleteDocument(request, documentId)
     }
 
 }

@@ -45,4 +45,9 @@ export const documentsApi = {
     api
       .post(`/documents/retry-embbeding/${encodeURIComponent(id)}`)
       .then((r) => r.data),
+
+  delete: (id) =>
+    api
+      .delete(`/documents/${encodeURIComponent(id)}`)
+      .then((r) => r.data),
 };

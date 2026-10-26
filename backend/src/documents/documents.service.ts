@@ -3,10 +3,11 @@ import { InjectDrizzle } from "@nestjs/drizzle";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { OllamaEmbeddings } from '@langchain/ollama';
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { PDFParse } from 'pdf-parse';
 import { documents, EmbeddingStatus } from "../db/schema/document.schema.js";
 import { documentChunks } from "../db/schema/documentChunk.schema.js";
+import { chatSessions } from "../db/schema/chatSession.schema.js";
 import { and, eq } from "drizzle-orm";
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -23,7 +24,7 @@ export class DocumentsService {
     ) {
 
         this.embeddings = new OllamaEmbeddings({
-            model: "nomic-embed-text",
+            model: process.env.AI_EMBBEDING_MODEL!,
             baseUrl: "http://localhost:11434",
         });
 
@@ -294,6 +295,66 @@ export class DocumentsService {
             statusCode: HttpStatus.OK,
             message: "Documents fetched successfully",
             data: documentsWithPresingedUrl
+        }
+
+    }
+
+
+    async deleteDocument(
+        request: any,
+        documentId: string
+    ) {
+
+        const userId = request?.user?.id;
+
+        if (!userId) {
+            throw new HttpException("User not found", HttpStatus.UNAUTHORIZED);
+        }
+
+        const document = await this.db
+            .select()
+            .from(documents)
+            .where(eq(documents.id, documentId));
+
+        if (!document) {
+            throw new HttpException("Document not found", HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            const command = new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET,
+                Key: document[0].fileKey,
+            });
+
+            await this.client.send(command);
+
+            await this.db.delete(documentChunks).where(eq(documentChunks.documentId, documentId));
+
+            await this.db.delete(documents).where(eq(documents.id, documentId));
+
+            // Clean up deleted document from user's chat sessions
+            const userSessions = await this.db
+                .select({ id: chatSessions.id, documentIds: chatSessions.documentIds })
+                .from(chatSessions)
+                .where(eq(chatSessions.userId, userId));
+
+            for (const session of userSessions) {
+                if (session.documentIds && session.documentIds.includes(documentId)) {
+                    const filteredIds = session.documentIds.filter(id => id !== documentId);
+                    await this.db
+                        .update(chatSessions)
+                        .set({ documentIds: filteredIds })
+                        .where(eq(chatSessions.id, session.id));
+                }
+            }
+
+            return {
+                status: true,
+                message: "Document deleted successfully"
+            };
+        } catch (error) {
+            console.error(error);
+            throw new HttpException("Failed to delete document", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

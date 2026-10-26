@@ -1,0 +1,47 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "33c9f5f5-e584-4b80-8cb8-4f597976ef28",
+  "prevIds": [
+    "3c86ab74-f311-4121-b027-61eeed8f7113"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "chat_sessions",
+        "document_ids"
+      ],
+      "writes": [
+        "s|col|public.chat_sessions.document_ids",
+        "n|col|public.chat_sessions.document_ids",
+        "e|col|public.chat_sessions.document_ids"
+      ],
+      "reads": [
+        "n|tbl|public.chat_sessions",
+        "n|sch|public"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "chat_sessions",
+        "name": "document_ids",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": "'[]'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    }
+  ]
+}

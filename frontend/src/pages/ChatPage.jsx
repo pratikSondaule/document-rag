@@ -5,6 +5,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import toast from "react-hot-toast";
 import ChatComposer from "../components/chat/ChatComposer";
 import ChatHeader from "../components/chat/ChatHeader";
 import ChatMessages from "../components/chat/ChatMessages";
@@ -13,6 +14,7 @@ import Button from "../components/common/Button";
 import { useChat } from "../hooks/useChat";
 import { useDocuments } from "../hooks/useDocuments";
 import { useSessions } from "../hooks/useSessions";
+import { chatsApi } from "../api/chats.api";
 
 const SUGGESTIONS = [
   "Summarize the selected document.",
@@ -84,6 +86,7 @@ export default function ChatPage() {
   const sessionId = params.get("session");
   const location = useLocation();
   const navigate = useNavigate();
+
   const { sessions, refresh: refreshSessions } = useSessions();
   const {
     documents,
@@ -94,7 +97,6 @@ export default function ChatPage() {
   const [selectedIds, setSelectedIds] = useState([]);
   const [draft, setDraft] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [validationError, setValidationError] = useState("");
   const inputRef = useRef(null);
 
   const readyDocs = useMemo(
@@ -136,7 +138,6 @@ export default function ChatPage() {
     if (!sessionId) {
       setSelectedIds([]);
       setDraft("");
-      setValidationError("");
     }
   }, [sessionId, location.key]);
 
@@ -156,22 +157,24 @@ export default function ChatPage() {
   const submit = () => {
     if (sending) return;
     const question = draft.trim();
-    if (!question) return setValidationError("Enter a question.");
+    if (!question) return;
     if (effectiveIds.length === 0) {
-      return setValidationError(
+      toast.error(
         readyDocs.length
-          ? "Select at least one document to search."
+          ? "Select at least one document."
           : "No documents are ready yet. Upload a PDF and wait for processing to finish.",
       );
+      return;
     }
-    setValidationError("");
     setDraft("");
     send({ question, documentIds: effectiveIds });
   };
 
   const changeSelection = (ids) => {
     setSelectedIds(ids);
-    setValidationError("");
+    if (sessionId) {
+      chatsApi.updateSessionDocuments(sessionId, ids).catch(() => {});
+    }
   };
 
   const activeTitle =
@@ -197,7 +200,6 @@ export default function ChatPage() {
               onOpenPicker={() => setPickerOpen(true)}
               onSuggest={(text) => {
                 setDraft(text);
-                setValidationError("");
                 inputRef.current?.focus();
               }}
             />
@@ -207,10 +209,7 @@ export default function ChatPage() {
 
       <ChatComposer
         value={draft}
-        onChange={(v) => {
-          setDraft(v);
-          setValidationError("");
-        }}
+        onChange={setDraft}
         onSubmit={submit}
         sending={sending}
         selectedDocs={selectedDocs}
@@ -219,7 +218,6 @@ export default function ChatPage() {
           changeSelection(selectedIds.filter((x) => x !== id))
         }
         onClearDocs={() => changeSelection([])}
-        error={validationError}
         inputRef={inputRef}
       />
 

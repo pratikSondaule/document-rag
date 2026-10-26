@@ -22,13 +22,13 @@ export class ChatsService {
         private db: NodePgDatabase
     ) {
         this.ai = new ChatOllama({
-            model: "llama3.2:1b",
+            model: process.env.AI_CHAT_MODEL!,
             baseUrl: "http://localhost:11434",
             temperature: 0,
         });
 
         this.embeddings = new OllamaEmbeddings({
-            model: "nomic-embed-text",
+            model: process.env.AI_EMBBEDING_MODEL!,
             baseUrl: "http://localhost:11434",
         });
     }
@@ -37,6 +37,7 @@ export class ChatsService {
         userId: string,
         sessionId: string | undefined,
         question: string,
+        documentIds: string[] = [],
     ) {
         if (sessionId) {
             const [session] = await this.db
@@ -57,6 +58,13 @@ export class ChatsService {
                 );
             }
 
+            if (documentIds.length > 0) {
+                await this.db
+                    .update(chatSessions)
+                    .set({ documentIds })
+                    .where(eq(chatSessions.id, sessionId));
+            }
+
             return session.id;
         }
 
@@ -66,7 +74,7 @@ export class ChatsService {
 
         const [newSession] = await this.db
             .insert(chatSessions)
-            .values({ userId, title })
+            .values({ userId, title, documentIds })
             .returning({ id: chatSessions.id });
 
         return newSession.id;
@@ -210,10 +218,18 @@ export class ChatsService {
 
             const warnings: string[] = [];
 
+            const { readyDocIds, warnings: docsWarnings } = await this.getReadyDocuments(
+                userId,
+                data?.documentIds || [],
+            );
+
+            warnings.push(...docsWarnings);
+
             const sessionId = await this.getOrCreateSession(
                 userId,
                 data?.sessionId,
-                data?.question
+                data?.question,
+                readyDocIds,
             );
 
             await this.db.insert(chatMessages).values({
@@ -221,13 +237,6 @@ export class ChatsService {
                 role: MessageRole.USER,
                 content: data?.question,
             });
-
-            const { readyDocIds, warnings: docsWarnings } = await this.getReadyDocuments(
-                userId,
-                data?.documentIds || [],
-            );
-
-            warnings.push(...docsWarnings);
 
             const relevantChunks = await this.retrieveRelevantChunks(
                 userId,
@@ -360,10 +369,36 @@ export class ChatsService {
                 .where(eq(chatMessages.sessionId, sessionId))
                 .orderBy(asc(chatMessages.createdAt));
 
+            const docIds: string[] = chatSession[0].documentIds ?? [];
+            let validDocIds = docIds;
+            if (docIds.length > 0) {
+                const existing = await this.db
+                    .select({ id: documents.id })
+                    .from(documents)
+                    .where(
+                        and(
+                            eq(documents.userId, userId),
+                            inArray(documents.id, docIds)
+                        )
+                    );
+                const existingSet = new Set(existing.map(d => d.id));
+                validDocIds = docIds.filter(id => existingSet.has(id));
+
+                if (validDocIds.length !== docIds.length) {
+                    await this.db
+                        .update(chatSessions)
+                        .set({ documentIds: validDocIds })
+                        .where(eq(chatSessions.id, sessionId));
+                }
+            }
+
             return {
                 status: true,
                 statusCode: HttpStatus.OK,
-                data: chatHistory,
+                data: {
+                    messages: chatHistory,
+                    documentIds: validDocIds,
+                },
                 message: "Fetched chat history successfully"
             }
 
@@ -375,6 +410,62 @@ export class ChatsService {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             );
         }
+    }
+
+
+    async updateSessionDocuments(
+        request: any,
+        sessionId: string,
+        documentIds: string[],
+    ) {
+        const userId = request?.user?.id;
+
+        if (!userId) {
+            throw new HttpException("User not found", HttpStatus.UNAUTHORIZED);
+        }
+
+        const chatSession = await this.db.select()
+            .from(chatSessions)
+            .where(
+                and(
+                    eq(chatSessions.id, sessionId),
+                    eq(chatSessions.userId, userId)
+                )
+            );
+
+        if (!chatSession || chatSession.length === 0) {
+            throw new HttpException("Chat session not found", HttpStatus.NOT_FOUND);
+        }
+
+        let validDocIds: string[] = [];
+        if (documentIds && documentIds.length > 0) {
+            const existing = await this.db
+                .select({ id: documents.id })
+                .from(documents)
+                .where(
+                    and(
+                        eq(documents.userId, userId),
+                        inArray(documents.id, documentIds)
+                    )
+                );
+            const existingSet = new Set(existing.map(d => d.id));
+            validDocIds = documentIds.filter(id => existingSet.has(id));
+        }
+
+        await this.db
+            .update(chatSessions)
+            .set({ documentIds: validDocIds })
+            .where(eq(chatSessions.id, sessionId));
+
+        return {
+            status: true,
+            statusCode: HttpStatus.OK,
+            data: {
+                sessionId,
+                documentIds: validDocIds,
+            },
+            message: "Session documents updated successfully",
+        };
     }
 
 
