@@ -26,7 +26,7 @@ Document RAG is a Retrieval-Augmented Generation (RAG) app. Upload PDF documents
 1. A PDF is uploaded and stored in S3-compatible storage.
 2. The backend splits it into chunks, creates an embedding for each chunk and saves them in PostgreSQL (`pgvector`). The document's status moves from `pending` to `ready` (or `failed`).
 3. When you ask a question, the question is embedded and the most similar chunks (cosine similarity) are retrieved from the selected documents.
-4. The chunks are sent to the chat model as context, and the answer is streamed back to the browser over Server-Sent Events.
+4. The chunks are sent to the chat model as context, and the answer is sent back to the browser.
 
 ## Project structure
 
