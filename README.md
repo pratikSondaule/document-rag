@@ -1,15 +1,13 @@
 # Document RAG — Chat with your PDFs
 
-Document RAG is a Retrieval-Augmented Generation (RAG) app. Upload PDF documents, let the app process them into searchable embeddings, then ask questions and get streamed answers grounded in the documents you select.
+Document RAG is a Retrieval-Augmented Generation (RAG) app. Upload PDF documents, let the app process them into searchable embeddings, then ask questions and get answers grounded in the documents you select.
 
 ## Features
 
 - Register and log in (JWT access + refresh tokens)
-- Upload PDFs (drag and drop, size validation, upload progress)
+- Upload PDF document
 - Track embedding status per document (`pending`, `ready`, `failed`) and retry failed jobs
 - Select one or many ready documents to query
-- Answers stream in token by token, with a Stop button
-- Source snippets shown under answers
 - Chat history: browse, rename and delete conversations
 - Responsive UI for desktop, tablet and mobile
 
@@ -202,28 +200,6 @@ If you would rather use a hosted provider than run Ollama:
 3. Add the provider's API key to `backend/.env` and pass it to those classes.
 4. Set `AI_CHAT_MODEL`, `AI_EMBBEDING_MODEL` and `EMBEDDING_DIMENSIONS` to match the provider's models.
 
-## API overview
-
-All routes except register, login and refresh require an `Authorization: Bearer <accessToken>` header.
-
-| Method | Endpoint                                 | Description                                    |
-| ------ | ---------------------------------------- | ---------------------------------------------- | ------------------------------------------------- | --- |
-| POST   | `/auth/register`                         | Register a user                                |
-| POST   | `/auth/login`                            | Log in and receive tokens                      |
-| POST   | `/auth/refresh`                          | Get a new access token                         |
-| GET    | `/auth/me`                               | Current user                                   |
-| POST   | `/documents/upload`                      | Upload a PDF (multipart form data)             |
-| GET    | `/documents`                             | List your documents and their embedding status |
-| POST   | `/documents/retry-embbeding/:documentId` | Retry embedding for a failed document          |
-| POST   | `/chats/ask`                             | Ask a question (single JSON response)          |
-| <!--   | POST                                     | `/chats/ask-stream`                            | Ask a question (streamed over Server-Sent Events) | --> |
-| GET    | `/chats/get-chat-sessions`               | List chat sessions                             |
-| GET    | `/chats/:sessionId/get-chat-history`     | Messages in a session                          |
-| PUT    | `/chats/:sessionId/rename-chat-session`  | Rename a session                               |
-| DELETE | `/chats/:sessionId/delete-chat-session`  | Delete a session                               |
-
-<!-- The frontend uses `/chats/ask-stream`. The streaming endpoint sends `data:` events of these types: `session`, `token`, `done` (with sources) and `error`. -->
-
 ## Production build
 
 ```bash
@@ -264,8 +240,3 @@ Make sure `JWT_SECRET` and `JWT_SECRET_REFRESH` stay the same between restarts o
 
 **Answers appear all at once instead of streaming**
 A proxy, CDN or compression middleware is buffering the response. See the deployment notes above.
-
-## Security notes
-
-- Access and refresh tokens are currently kept in the browser's `localStorage`, which is convenient for development but readable by any script running on the page. For production, consider moving the refresh token to an `HttpOnly` cookie.
-- Never commit your `.env` files. Add them to `.gitignore` and commit only example files.
