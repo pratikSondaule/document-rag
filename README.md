@@ -1,6 +1,6 @@
-# DocuMind — Chat with your PDFs
+# Document RAG — Chat with your PDFs
 
-DocuMind is a Retrieval-Augmented Generation (RAG) app. Upload PDF documents, let the app process them into searchable embeddings, then ask questions and get streamed answers grounded in the documents you select.
+Document RAG is a Retrieval-Augmented Generation (RAG) app. Upload PDF documents, let the app process them into searchable embeddings, then ask questions and get streamed answers grounded in the documents you select.
 
 ## Features
 
@@ -59,8 +59,8 @@ cd <your-repo-folder>
 Create a database and enable `pgvector`:
 
 ```sql
-CREATE DATABASE documind;
-\c documind
+CREATE DATABASE documentDb;
+\c documentDb
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
@@ -113,7 +113,7 @@ Open the URL Vite prints (by default <http://localhost:5173>), register an accou
 ### Backend (`backend/.env`)
 
 ```dotenv
-DATABASE_URL=postgresql://postgres:password@localhost:5432/documind
+DATABASE_URL=postgresql://postgres:password@localhost:5432/documentDb
 PORT=3000
 
 JWT_SECRET=replace-with-a-long-random-string
